@@ -10,7 +10,7 @@
 	<button id="sendCode">获取验证码</button>
 
 	<script type="text/javascript">
-		function countDown (id,time) {
+		/*function countDown (id, time) {
 			var second = typeof(time) === 'number' ? Math.abs(time) : 60,
 				tar = document.querySelector('#' + id);
 
@@ -44,9 +44,39 @@
 					})(this)
 				}
 			}
+		}*/
+
+		function countDown (id, time) {
+			var second = typeof(time) === 'number' ? Math.abs(time) : 60,
+				tar = document.querySelector('#' + id);
+
+			if (tar === null) {
+				alert('need target id!');
+				return false;
+			}
+
+			var timer = setInterval(excute,1000);
+
+			function excute () {
+				if (second == 1) {
+					clearInterval(timer);
+					tar.removeAttribute('disabled');
+					tar.innerHTML = '获取验证码';
+				} else {
+					second --;
+					tar.innerHTML = second;
+					tar.setAttribute('disabled','disabled');
+				}
+			}
+
 		}
+
 		window.onload = function () {
-			countDown('sendCode',10).excute();
+			var sendCode = document.querySelector('#sendCode');
+			sendCode.onclick = function () {
+				// countDown(this.id,10).excute();
+				countDown(this.id,10);
+			}
 		}
 	</script>
 </body>
