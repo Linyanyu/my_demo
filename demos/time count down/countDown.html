@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+</head>
+<body>
+
+	<button id="sendCode">获取验证码</button>
+
+	<script type="text/javascript">
+		function countDown (id,time) {
+			var second = typeof(time) === 'number' ? Math.abs(time) : 60,
+				tar = document.querySelector('#' + id);
+
+			if (tar === null) {
+				alert('need target id!');
+				return false;
+			}
+
+			return {
+				timer: null,
+				tar: tar,
+				second: second,
+				excute: function () {
+					return (function (that){
+						var tar = that.tar,
+							second = that.second,
+							timer = that.timer;
+
+						if (second === 0) {
+							timer = null;
+							tar.removeAttribute('disabled');
+							tar.innerHTML = '获取验证码';
+						} else {
+							tar.innerHTML = second;
+							tar.setAttribute('disabled','disabled');
+							second --;
+							timer = setTimeout(function() {
+					            countDown(tar.id,second).excute();
+					        }, 1000);
+						}
+					})(this)
+				}
+			}
+		}
+		window.onload = function () {
+			countDown('sendCode',10).excute();
+		}
+	</script>
+</body>
+</html>
