@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="../../assets/css/base.css">
+	<title>拖动并可返回案例</title>
 	<style>
 		.dragTarget{position:absolute;left:70px;top:70px;width:100px;height:100px;background:red;cursor: move;}
 	</style>
@@ -18,15 +19,19 @@
 				target = document.querySelector('#dragTarget'),
 				list = [];
 
+			// 绑定鼠标按下事件
 			target.onmousedown = function (event) {
 				var e = window.event || event;
 
 				e.preventDefault();
 
+				// 计算鼠标坐标和 div 坐标的差值
 				var posX = e.clientX - target.offsetLeft,
 					posY = e.clientY - target.offsetTop;
 
+				// 绑定 document 的 mouse 事件
 				document.onmousemove = function (ev) {
+					// 移动 div 并将路径保存至 list
 					target.style.left = (ev.clientX - posX) + 'px';
 					target.style.top = (ev.clientY - posY) + 'px';
 					list.push({
@@ -36,13 +41,19 @@
 				}
 			}
 
+			// 鼠标放开时需要重置 mousemove 事件
 			document.onmouseup = function (ev) {
 				document.onmousemove = null;
 			}
 
+			// 按钮点击事件
 			back.onclick = function () {
 				var i = 0;
+
+				// 将数组倒置
 				list.reverse();
+
+				// 将 div 按 list 中的路径返回
 				var timer = setInterval(function () {
 					target.style.left = list[i].X + 'px';
 					target.style.top = list[i].Y + 'px';
