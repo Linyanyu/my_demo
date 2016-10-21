@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<style>
+		.dragTarget{position:absolute;left:50px;top:50px;width:100px;height:100px;background:red;cursor: move;}
+	</style>
+</head>
+<body>
+	
+	<div id='dragTarget' class="dragTarget"></div>
+	<button id='comeBack'>back</button>
+
+	<script type="text/javascript">
+		window.onload = function () {
+			var back = document.querySelector('#comeBack'),
+				target = document.querySelector('#dragTarget'),
+				list = [];
+
+			target.onmousedown = function (event) {
+				var e = window.event || event;
+
+				e.preventDefault();
+
+				var posX = e.clientX - target.offsetLeft,
+					posY = e.clientY - target.offsetTop;
+
+				document.onmousemove = function (ev) {
+					target.style.left = (ev.clientX - posX) + 'px';
+					target.style.top = (ev.clientY - posY) + 'px';
+					list.push({
+						X: ev.clientX - posX,
+						Y: ev.clientY - posY
+					});
+				}
+			}
+
+			document.onmouseup = function (ev) {
+				document.onmousemove = null;
+			}
+
+			back.onclick = function () {
+				var i = 0;
+				list.reverse();
+				var timer = setInterval(function () {
+					target.style.left = list[i].X + 'px';
+					target.style.top = list[i].Y + 'px';
+					i++;
+					if (i == list.length) {
+						clearInterval(timer);
+						list = [];
+					}
+				}, 30)
+			}
+
+		}
+	</script>
+</body>
+</html>
