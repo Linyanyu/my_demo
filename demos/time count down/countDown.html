@@ -13,10 +13,10 @@
 		/*
 		 * 使用 setTimeout 进行倒计时
 		 * 通过闭包优化常见 setTimeout 函数需要依赖外部变量的问题，减少全局变量的污染
-		 * 通过 countDown1(id, time).excute() 调用
-		*/
+		 * 通过 countDown1(id, time).execute() 调用，马上可以看到文字变成倒计时数字
+		 */
 
-		/* function countDown1 (id, time) {
+		function countDown1 (id, time) {
 			var second = typeof(time) === 'number' ? Math.abs(time) : 60,
 				tar = document.querySelector('#' + id);
 
@@ -30,7 +30,7 @@
 				timer: null,
 				tar: tar,
 				second: second,
-				excute: function () {
+				execute: function () {
 					return (function (that){
 						var tar = that.tar,
 							second = that.second,
@@ -45,19 +45,19 @@
 							tar.setAttribute('disabled','disabled');
 							second --;
 							timer = setTimeout(function() {
-					            countDown1(tar.id,second).excute();
+					            countDown1(tar.id,second).execute();
 					        }, 1000);
 						}
 					})(this)
 				}
 			}
-		} */
+		}
 
 		/*
 		 * 通过 setInterval 进行倒计时
 		 * 用户需要等待一秒钟才能看到倒计时数字，但是代码量相对较少
-		*/
-		function countDown2 (id, time) {
+		 */
+		/* function countDown2 (id, time) {
 			var second = typeof(time) === 'number' ? Math.abs(time) : 60,
 				tar = document.querySelector('#' + id);
 
@@ -80,14 +80,14 @@
 				}
 			}
 
-		}
+		}*/
 
 		window.onload = function () {
 			var sendCode = document.querySelector('#sendCode');
 			// 触发两种不同倒计时
 			sendCode.onclick = function () {
-				// countDown1(this.id,10).excute();
-				countDown2(this.id,10);
+				countDown1(this.id,10).execute();
+				// countDown2(this.id,10);
 			}
 		}
 	</script>
