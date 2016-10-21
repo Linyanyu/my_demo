@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>jQuery 弹窗插件</title>
+	<link rel="stylesheet" type="text/css" href="../../assets/css/base.css">
+</head>
+<body>
+
+	<script type="text/javascript" src="../../assets/js/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript">
+		
+	$.extend($.fn,{
+	    layerList : [],
+	    showInline : function(){
+	        return this.css("display","inline-block");
+	    },
+	    conPosition : function(){
+	        var w = this.width(),
+	            h = this.height();
+	        return this.css({
+	            "margin-left" : -(w/2) + "px",
+	            "margin-top" : -(h/2) + "px"
+	        })
+	    },
+	    layerShow : function(){
+	        var l = $().layerList,
+	            bg = $("#background"),
+	            index = l.indexOf(this.attr("id")),
+	            $this = this;
+	        (!bg.length) && ($("body").append('<div class="background" id="background"></div>'));
+	        (l.length === 0) ? $("#background").show() : $(".topLayer").removeClass("topLayer").addClass("belowLayer");
+	        l.push(this.attr("id"));
+	        (index > -1) && l.splice(index,1);
+	        this.show().addClass("topLayer").removeClass("belowLayer");
+	        // 判断是不是移动端
+	        if(!browser.versions.mobile) {
+	            $this.conPosition()
+	        }else if(browser.versions.iPhone){
+	            // 输入框不被输入法遮挡
+	            $(this).find(".layerInput").focus(function(){
+	                $this.css("top", $this.height() /2 + "px");
+	            }).blur(function(){
+	                function resetTop(){
+	                    $("#" + $this.attr("id")).css("top", "50%");
+	                }
+	                setTimeout(resetTop,300);
+	            });
+	        }
+	        return this;
+	    },
+	    layerHide : function(){
+	        if($(this).css("display") != "none"){
+	            var l = $().layerList;
+	            $(this).hide().removeClass("topLayer");
+	            (l.length === 1) ? $("#background").hide() : $("#"+ l.slice((l.length-2),(l.length-1))).addClass("topLayer").removeClass("belowLayer");
+	            l.splice(l.indexOf(this.attr("id")),1);
+	        }
+	        return this;
+	    },
+	    /**
+	     *
+	     * @param options
+	     * @param funcA
+	     * @param funcB
+	     */
+	    showDialog : function(options,funcA,funcB){
+	        console.log(options);
+	        var opts = options || {},
+	            dialog = $("#dialog"),
+	            operaHtml = "";
+	        ((typeof opts)== "string" ) ? (this.content = options) : (this.content = opts.content || '');
+	        this.lBtnText = opts.lBtnText || "确定";
+	        this.rBtnText = opts.rBtnText || "取消";
+	        this.btnSum = typeof(opts.btnSum) == "undefined" ? 1 : opts.btnSum;
+	        (dialog.length) && (dialog.layerHide().remove());
+
+	        if(this.btnSum === 2){
+	            operaHtml = '<a class="dialogConfirm" href="javascript:void(0)">' + this.lBtnText + '</a>' +
+	            '<a class="dialogCancel ml10" href="javascript:void(0)">'+this.rBtnText+'</a>';
+	        }else if(this.btnSum === 1){
+	            operaHtml = '<a class="dialogConfirm" href="javascript:void(0)">' + this.lBtnText + '</a>';
+	        }else if(this.btnSum === 0){
+	            operaHtml = "";
+	        }
+
+	        var c = ['<div class="layer" id="dialog">','<div class="dialogContent" id="dialogContent">'+this.content+'</div>','<div class="dialogOpera">'+ operaHtml +' </div>','</div>'].join("");
+	        $(c).appendTo($("body")).layerShow();
+
+	        return this.find(".dialogConfirm").click(function(){
+	            $("#dialog").layerHide();
+	            funcA && funcA.call($(c));
+	        }), this.find(".dialogCancel").click(function(){
+	            $("#dialog").layerHide();
+	            funcB && funcB.call($(c));
+	        });
+	    }
+	});
+
+	</script>
+
+</body>
+</html>
