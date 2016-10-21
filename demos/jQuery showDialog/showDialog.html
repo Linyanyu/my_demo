@@ -5,12 +5,68 @@
 	<meta charset="utf-8">
 	<title>jQuery 弹窗插件</title>
 	<link rel="stylesheet" type="text/css" href="../../assets/css/base.css">
+	<style type="text/css">
+		.background,#background{display: none;z-index: 10000;background: #000 !important;opacity: 0.5 !important;position: fixed;width: 100%;height: 100%;left: 0;top: 0;}
+		.layer {background: #fff;border-radius: 3px;position: fixed;left: 50%;top: 50%;display: none;}
+		.topLayer {z-index: 12000;}
+		.belowLayer{z-index: 9999;}
+		.layerOperaCon{border-top: 1px solid #e7e7e7;padding-top: 15px;text-align: center;}
+		.layerTit{font-size: 1.6rem;font-weight: bold;height: 59px;line-height: 59px;border-bottom: 1px solid #f1f1f1;padding-left: 20px;}
+		.layerOpera{border-radius: 3px;font-size: 1.4rem;width: 64px;height: 28px;line-height: 28px;display: inline-block;text-align: center;cursor: pointer;}
+		.layerConfirm{background: #70b544;color: #fff;}
+		.layerCancel{color: #000;background: #f0f0f0;}
+		.layer input[type="text"],.layer input[type="password"],.layer textarea{border: 1px solid #e7e7e7;border-radius: 2px;padding-left: 10px;line-height: 30px;}
+		.layer input[type="text"]:focus,.layer input[type="password"]:focus,.layer textarea:focus{border: 1px solid #70b544;box-shadow: 0 0 2px #70b544;}
+		.layer textarea{line-height: 20px;padding-top: 10px;}
+		.layer input.errorInput,.layer textarea.errorInput{border: 1px solid red;box-shadow: 0 0 2px red;}
+		.dialogContent{padding: 3rem 6rem;font-size: 1.6rem;line-height: 2rem}
+		.dialogOpera{border-top: 1px solid #f1f1f1;text-align: center;font-size: 1.4rem;padding: 1rem 2rem;}
+		.dialogOpera img{vertical-align: middle;margin-right: 10px;}
+		.dialogOpera a{display: inline-block;border-radius: 3px;padding: 5px 10px;min-width: 80px;}
+		.dialogConfirm{color: #fff;background: #70b544;}
+		.dialogConfirm:hover{background: #62AC30;color: #fff;text-decoration: none;}
+		.dialogCancel{background: #F0F0F0;color: #000;}
+		.closeIcon{width: 16px;height: 16px;right: 15px;top: 15px;cursor: pointer;position: absolute;background: url(/images/editSignImg.png) -37px -151px no-repeat;display: inline-block;}
+
+		button{margin-left: 30px;margin-top: 30px;}
+	</style>
 </head>
 <body>
+
+	<button id="justTip">遮罩提示</button>
+	<button id="alertTip">alert</button>
+	<button id="confirmTip">confirm</button>
+
 
 	<script type="text/javascript" src="../../assets/js/jquery-1.11.1.min.js"></script>
 	<script type="text/javascript">
 		
+	$(function(){
+		$('#justTip').click(function () {
+			$(document).showDialog({
+                content: '您已无法继续操作',
+                btnSum: 0
+            });
+		});
+
+		$('#alertTip').click(function () {
+			$(document).showDialog('这是 alert 提示');
+		});
+		
+		$('#confirmTip').click(function () {
+			$(document).showDialog({
+				content: '这是 confirm 提示',
+				btnSum: 2,
+				lBtnText: '确认文字',
+				rBtnText: '取消文字'
+			}, function () {
+				alert('您点了确定');
+			}, function () {
+				alert('您点了取消');
+			});
+		});
+	})
+
 	$.extend($.fn,{
 	    layerList : [],
 	    showInline : function(){
@@ -35,9 +91,9 @@
 	        (index > -1) && l.splice(index,1);
 	        this.show().addClass("topLayer").removeClass("belowLayer");
 	        // 判断是不是移动端
-	        if(!browser.versions.mobile) {
+	        // if(!browser.versions.mobile) {
 	            $this.conPosition()
-	        }else if(browser.versions.iPhone){
+	        /* }else if(browser.versions.iPhone){
 	            // 输入框不被输入法遮挡
 	            $(this).find(".layerInput").focus(function(){
 	                $this.css("top", $this.height() /2 + "px");
@@ -47,7 +103,7 @@
 	                }
 	                setTimeout(resetTop,300);
 	            });
-	        }
+	        } */
 	        return this;
 	    },
 	    layerHide : function(){
