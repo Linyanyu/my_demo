@@ -3,14 +3,20 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title></title>
+	<title>验证码倒计时案例</title>
 </head>
 <body>
 
 	<button id="sendCode">获取验证码</button>
 
 	<script type="text/javascript">
-		/*function countDown (id, time) {
+		/*
+		 * 使用 setTimeout 进行倒计时
+		 * 通过闭包优化常见 setTimeout 函数需要依赖外部变量的问题，减少全局变量的污染
+		 * 通过 countDown1(id, time).excute() 调用
+		*/
+
+		/* function countDown1 (id, time) {
 			var second = typeof(time) === 'number' ? Math.abs(time) : 60,
 				tar = document.querySelector('#' + id);
 
@@ -19,6 +25,7 @@
 				return false;
 			}
 
+			// 关键操作在闭包内
 			return {
 				timer: null,
 				tar: tar,
@@ -38,15 +45,19 @@
 							tar.setAttribute('disabled','disabled');
 							second --;
 							timer = setTimeout(function() {
-					            countDown(tar.id,second).excute();
+					            countDown1(tar.id,second).excute();
 					        }, 1000);
 						}
 					})(this)
 				}
 			}
-		}*/
+		} */
 
-		function countDown (id, time) {
+		/*
+		 * 通过 setInterval 进行倒计时
+		 * 用户需要等待一秒钟才能看到倒计时数字，但是代码量相对较少
+		*/
+		function countDown2 (id, time) {
 			var second = typeof(time) === 'number' ? Math.abs(time) : 60,
 				tar = document.querySelector('#' + id);
 
@@ -73,9 +84,10 @@
 
 		window.onload = function () {
 			var sendCode = document.querySelector('#sendCode');
+			// 触发两种不同倒计时
 			sendCode.onclick = function () {
-				// countDown(this.id,10).excute();
-				countDown(this.id,10);
+				// countDown1(this.id,10).excute();
+				countDown2(this.id,10);
 			}
 		}
 	</script>
