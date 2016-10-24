@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>jQuery 弹窗插件</title>
+	<link rel="stylesheet" type="text/css" href="../../assets/css/base.css">
+	<style type="text/css">
+		.background,#background{
+			display: none;
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			left: 0;
+			top: 0;
+			z-index: 10000;
+			background: #000 !important;
+			opacity: 0.5 !important;
+		}
+		.layer {
+			display: none;
+			position: fixed;
+			left: 50%;
+			top: 50%;
+			background: #fff;
+			border-radius: 3px;
+		}
+		.topLayer {
+			z-index: 12000;
+		}
+		.belowLayer{
+			z-index: 9999;
+		}
+		.layerOperaCon{
+			padding-top: 15px;
+			border-top: 1px solid #e7e7e7;
+			text-align: center;
+		}
+		.layerTit{
+			height: 59px;
+			padding-left: 20px;
+			border-bottom: 1px solid #f1f1f1;
+			font-size: 1.6rem;
+			font-weight: bold;
+			line-height: 59px;
+		}
+		.layerOpera{
+			display: inline-block;
+			width: 64px;
+			height: 28px;
+			font-size: 1.4rem;
+			line-height: 28px;
+			text-align: center;
+			cursor: pointer;
+			border-radius: 3px;
+		}
+		.layerConfirm{
+			background: #70b544;
+			color: #fff;
+		}
+		.layerCancel{
+			color: #000;
+			background: #f0f0f0;
+		}
+		.dialogContent{
+			padding: 3rem 6rem;
+			font-size: 1.6rem;
+			line-height: 2rem
+		}
+		.dialogOpera{
+			padding: 1rem 2rem;
+			border-top: 1px solid #f1f1f1;
+			text-align: center;
+			font-size: 1.4rem;
+		}
+		.dialogOpera img{
+			margin-right: 10px;
+			vertical-align: middle;
+		}
+		.dialogOpera a{
+			display: inline-block;
+			padding: 5px 10px;
+			min-width: 80px;
+			border-radius: 3px;
+		}
+		.dialogConfirm{
+			color: #fff;
+			background: #70b544;
+		}
+		.dialogConfirm:hover{
+			background: #62AC30;
+			color: #fff;
+			text-decoration: none;
+		}
+		.dialogCancel{
+			background: #F0F0F0;
+			color: #000;
+		}
+
+		button{
+			margin-left: 30px;
+			margin-top: 30px;
+		}
+	</style>
+</head>
+<body>
+
+	<button id="justTip">遮罩提示</button>
+	<button id="alertTip">alert</button>
+	<button id="confirmTip">confirm</button>
+
+
+	<script type="text/javascript" src="../../assets/js/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript">
+		
+	$(function(){
+		$('#justTip').click(function () {
+			$(document).showDialog({
+                content: '您已无法继续操作',
+                btnSum: 0
+            });
+		});
+
+		$('#alertTip').click(function () {
+			$(document).showDialog('这是 alert 提示');
+		});
+		
+		$('#confirmTip').click(function () {
+			$(document).showDialog({
+				content: '这是 confirm 提示',
+				btnSum: 2,
+				lBtnText: '确认文字',
+				rBtnText: '取消文字'
+			}, function () {
+				alert('您点了确定');
+			}, function () {
+				alert('您点了取消');
+			});
+		});
+	})
+
+	$.extend($.fn,{
+	    layerList : [],
+	    showInline : function(){
+	        return this.css("display","inline-block");
+	    },
+	    conPosition : function(){
+	        var w = this.width(),
+	            h = this.height();
+	        return this.css({
+	            "margin-left" : -(w/2) + "px",
+	            "margin-top" : -(h/2) + "px"
+	        })
+	    },
+	    layerShow : function(){
+	        var l = $().layerList,
+	            bg = $("#background"),
+	            index = l.indexOf(this.attr("id")),
+	            $this = this;
+
+	        (!bg.length) && ($("body").append('<div class="background" id="background"></div>'));
+	        (index > -1) && l.splice(index,1);
+
+	        if (l.length === 0) {
+	        	$("#background").show()
+	        } else {
+	        	$(".topLayer").removeClass("topLayer").addClass("belowLayer");
+	        }
+
+	        l.push(this.attr("id"));
+	        this.show().addClass("topLayer").removeClass("belowLayer").conPosition();
+
+	        return this;
+	    },
+	    layerHide : function(){
+	        if($(this).css("display") != "none"){
+	            var l = $().layerList;
+	            $(this).hide().removeClass("topLayer");
+
+	            if (l.length === 1) {
+	            	$("#background").hide()
+	            } else {
+	            	$("#"+ l.slice((l.length-2),(l.length-1))).addClass("topLayer").removeClass("belowLayer");
+	            }
+
+	            l.splice(l.indexOf(this.attr("id")),1);
+	        }
+	        return this;
+	    },
+	    /**
+	     *
+	     * @param options
+	     * @param funcA
+	     * @param funcB
+	     */
+	    showDialog : function(options,funcA,funcB){
+	        console.log(options);
+	        var opts = options || {},
+	            dialog = $("#dialog"),
+	            operaHtml = "";
+	        ((typeof opts) == "string" ) ? (this.content = options) : (this.content = opts.content || '');
+	        this.lBtnText = opts.lBtnText || "确定";
+	        this.rBtnText = opts.rBtnText || "取消";
+	        this.btnSum = typeof(opts.btnSum) == "undefined" ? 1 : opts.btnSum;
+	        (dialog.length) && (dialog.layerHide().remove());
+
+	        if(this.btnSum === 2){
+	            operaHtml = '<a class="dialogConfirm" href="javascript:void(0)">' + this.lBtnText + '</a>' +
+	            '<a class="dialogCancel ml10" href="javascript:void(0)">'+this.rBtnText+'</a>';
+	        }else if(this.btnSum === 1){
+	            operaHtml = '<a class="dialogConfirm" href="javascript:void(0)">' + this.lBtnText + '</a>';
+	        }else if(this.btnSum === 0){
+	            operaHtml = "";
+	        }
+
+	        var c = ['<div class="layer" id="dialog">','<div class="dialogContent" id="dialogContent">'+this.content+'</div>','<div class="dialogOpera">'+ operaHtml +' </div>','</div>'].join("");
+	        $(c).appendTo($("body")).layerShow();
+
+	        return this.find(".dialogConfirm").click(function(){
+	            $("#dialog").layerHide();
+	            funcA && funcA.call($(c));
+	        }), this.find(".dialogCancel").click(function(){
+	            $("#dialog").layerHide();
+	            funcB && funcB.call($(c));
+	        });
+	    }
+	});
+
+	</script>
+
+</body>
+</html>
