@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
@@ -7,12 +6,25 @@
 	<style type="text/css">
 		.arrow,.arrowParent{
 			position: absolute;
-			left: 49%;
-			top: 49%;
-			width: 30px;
-			height: 30px;
-			background: red;
-			border-radius: 50%;
+			left: 100px;
+			top: 100px;
+			width: 0;
+			height: 0;
+			border-right: 5px solid transparent;
+			border-left: 5px solid transparent;
+			border-bottom: 15px solid #000;
+			transform: rotate(-22deg);
+		}
+		.arrow:before,.arrowParent:before{
+			content: "";
+		    width: 9px;
+		    height: 2px;
+		    background: #000;
+		    display: block;
+		    position: absolute;
+		    left: -4px;
+		    top: 16px;
+		    transform: rotate(90deg);
 		}
 	</style>
 </head>
@@ -29,13 +41,15 @@
 			var maxSonSum = 10;
 			var moveSonIndex = 0;
 			var arrowInterval = 25;
+			var resetStatus;
 
 			document.onmousemove = function (e) {
+
 				var mother = document.querySelector('#arrow'),
 					posX = e.pageX - mother.offsetWidth/2,
 					posY = e.pageY - mother.offsetWidth/2;
 
-				if(timer == 1){
+				if (timer == 1) {
 					timer = 0;
 					setTimeout(function () {
 						timer = 1;
@@ -51,15 +65,15 @@
 							moveSon();
 						}
 						
-					},arrowInterval)
+					}, arrowInterval);
 				}
 				
 				mother.style.left = posX + 'px';
 				mother.style.top = posY + 'px';
 			}
 
-
-			function makeSon(x,y) {
+			// 生成箭头
+			function makeSon(x, y) {
 				var pop = pathList.pop();
 				var son = document.createElement('div');
 
@@ -73,6 +87,7 @@
 				document.body.appendChild(son);
 			}
 
+			// 将箭头按鼠标路径移动
 			function moveSon () {
 				(moveSonIndex == maxSonSum) && (moveSonIndex =  0) ;
 
@@ -83,6 +98,20 @@
 				lastArrow.style.top = pop.Y + 'px';
 
 				moveSonIndex ++;
+
+				clearTimeout(resetStatus);
+				resetStatus = setTimeout(arrowReset,100);
+			}
+
+			// 重置箭头位置
+			function arrowReset () {
+				var mother = document.querySelector('#arrow'),
+					arrows = document.querySelectorAll('.arrow');
+
+				for (var i=0;i<arrows.length;i++) {
+					arrows[i].style.left = mother.offsetLeft + 'px';
+					arrows[i].style.top = mother.offsetTop + 'px';
+				}
 			}
 		}
 	</script>
