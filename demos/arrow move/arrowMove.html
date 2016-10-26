@@ -19,14 +19,80 @@
 		}
 		.arrow:before,.arrowParent:before{
 			content: "";
-		    width: 9px;
-		    height: 2px;
-		    background: #000;
 		    display: block;
 		    position: absolute;
 		    left: -4px;
 		    top: 16px;
+		    width: 9px;
+		    height: 2px;
+		    background: #000;
 		    transform: rotate(90deg);
+		}
+
+		.arrow2,.arrowParent2{
+			position: absolute;
+			width: 8px;
+			height: 2px;
+			background: #000;
+			transform: rotate(68deg);
+		}
+		.arrow2:before,.arrowParent2:before{
+			content: "";
+			position: absolute;
+			left: -8px;
+			top: -2px;
+			width: 0;
+			height: 0;
+			border-left: 5px solid transparent;
+		    border-right: 7px solid transparent;
+		    border-top: 5px solid #000;
+		    transform: rotate(-26deg);
+		}
+		.arrow2:after,.arrowParent2:after{
+			content: "";
+			position: absolute;
+			left: -9px;
+			top: -1px;
+			width: 0;
+			height: 0;
+			border-left: 7px solid transparent;
+		    border-right: 5px solid transparent;
+		    border-bottom: 5px solid #000;
+		    transform: rotate(22deg);
+		}
+
+		.arrow3,.arrowParent3{
+			left: 50%;
+			top: 50%;
+			position: absolute;
+			width: 0;
+			height: 0;
+			border-left: 5px solid transparent;
+		    border-right: 7px solid transparent;
+		    border-top: 5px solid #000;
+		    transform: rotate(42deg);
+		}
+		.arrow3:before,.arrowParent3:before{
+			content: "";
+			position: absolute;
+			left: -6px;
+			top: -4px;
+			width: 0;
+			height: 0;
+			border-left: 7px solid transparent;
+		    border-right: 5px solid transparent;
+		    border-bottom: 5px solid #000;
+		    transform: rotate(54deg);
+		}
+		.arrow3:after,.arrowParent3:after{
+			content: "";
+		    position: absolute;
+	        left: 1px;
+    		top: -1px;
+			width: 8px;
+			height: 2px;
+			background: #000;
+    		transform: rotate(23deg);
 		}
 	</style>
 </head>
@@ -46,10 +112,11 @@
 			var resetStatus;
 
 			document.onmousemove = function (e) {
+				//return false;
 
 				var mother = document.querySelector('#arrow'),
-					posX = e.pageX - mother.offsetWidth/2,
-					posY = e.pageY - mother.offsetWidth/2;
+					posX = e.pageX - mother.offsetWidth/2, // -3
+					posY = e.pageY - mother.offsetWidth/2; // +8
 
 				if (timer == 1) {
 					timer = 0;
