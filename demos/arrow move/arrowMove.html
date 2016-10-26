@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>arrow move</title>
+	<style type="text/css">
+		.arrow,.arrowParent{
+			position: absolute;
+			left: 49%;
+			top: 49%;
+			width: 30px;
+			height: 30px;
+			background: red;
+			border-radius: 50%;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="arrowParent" id="arrow"></div>
+
+	<script type="text/javascript">
+		
+		window.onload = function () {
+			var timer = 1;
+			var pathList = [];
+			var sonSum = 0;
+			var maxSonSum = 10;
+			var moveSonIndex = 0;
+			var arrowInterval = 25;
+
+			document.onmousemove = function (e) {
+				var mother = document.querySelector('#arrow'),
+					posX = e.pageX - mother.offsetWidth/2,
+					posY = e.pageY - mother.offsetWidth/2;
+
+				if(timer == 1){
+					timer = 0;
+					setTimeout(function () {
+						timer = 1;
+
+						pathList.push({
+							X: posX,
+							Y: posY
+						})
+
+						if (sonSum < maxSonSum) {
+							makeSon(e.pageX,e.pageY);
+						} else {
+							moveSon();
+						}
+						
+					},arrowInterval)
+				}
+				
+				mother.style.left = posX + 'px';
+				mother.style.top = posY + 'px';
+			}
+
+
+			function makeSon(x,y) {
+				var pop = pathList.pop();
+				var son = document.createElement('div');
+
+				sonSum ++;
+
+				son.id = 'arrow' + sonSum;
+				son.className = 'arrow';
+				son.style.left = pop.X + 'px';
+				son.style.top = pop.Y + 'px';
+
+				document.body.appendChild(son);
+			}
+
+			function moveSon () {
+				(moveSonIndex == maxSonSum) && (moveSonIndex =  0) ;
+
+				var lastArrow = document.querySelectorAll('.arrow')[moveSonIndex],
+					pop = pathList.pop();
+
+				lastArrow.style.left = pop.X + 'px';
+				lastArrow.style.top = pop.Y + 'px';
+
+				moveSonIndex ++;
+			}
+		}
+	</script>
+</body>
+</html>
