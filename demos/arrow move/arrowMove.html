@@ -16,6 +16,7 @@
 			border-left: 5px solid transparent;
 			border-bottom: 15px solid #000;
 			transform: rotate(-22deg);
+			z-index: -1;
 		}
 		.arrow:before,.arrowParent:before{
 			content: "";
@@ -35,6 +36,7 @@
 			height: 2px;
 			background: #000;
 			transform: rotate(68deg);
+			z-index: -1;
 		}
 		.arrow2:before,.arrowParent2:before{
 			content: "";
@@ -71,6 +73,7 @@
 		    border-right: 7px solid transparent;
 		    border-top: 5px solid #000;
 		    transform: rotate(42deg);
+		    z-index: -1;
 		}
 		.arrow3:before,.arrowParent3:before{
 			content: "";
@@ -98,19 +101,31 @@
 </head>
 <body>
 
+	<div class="container ml50 mt50">
+		<p>鼠标路径长度</p>
+		<p class="mt10">
+			<input type="radio" id="length5" name="length"/> <label for="length5" class="mr20 ml5">5</label>
+			<input type="radio" id="length10" name="length"/> <label for="length10" class="mr20 ml5">10</label>
+			<input type="radio" id="length15" name="length"/> <label for="length20" class="ml5">15</label>
+		</p>
+		<p></p>
+	</div>
+
 	<div class="arrowParent" id="arrow"></div>
 
 	<script type="text/javascript">
+
 		function MouseTail (maxSonSum,arrowInterval) {
 			this.timer = 1;
 			this.pathList = [];
 			this.sonSum = 0;
 			this.maxSonSum = maxSonSum ? maxSonSum : 10;
 			this.moveSonIndex = 0;
-			this.arrowInterval = arrowInterval ? arrowInterval : 50;
+			this.arrowInterval = arrowInterval ? arrowInterval : 25;
 			this.initialArrow = document.querySelector('#arrow');
 		}
 		
+		// 恢复子箭头位置至父箭头
 		MouseTail.prototype.arrowReset = function () {
 			var initialArrow = document.querySelector('#arrow');
 			var arrows = document.querySelectorAll('.arrow');
@@ -121,8 +136,8 @@
 			}
 		}
 
+		// 生成子箭头
 		MouseTail.prototype.makeSon = function (index) {
-			console.log(this)
 			var pop = this.pathList.pop();
 			var son = document.createElement('div');
 
@@ -134,6 +149,7 @@
 			document.body.appendChild(son);
 		}
 
+		// 逐个移动箭头
 		MouseTail.prototype.moveSon = function () {
 			(this.moveSonIndex == this.maxSonSum) && (this.moveSonIndex =  0) ;
 
@@ -149,8 +165,16 @@
 			this.resetStatus = setTimeout(this.arrowReset, 100);
 		}
 
+		// 初始函数，绑定鼠标移动事件
 		MouseTail.prototype.init = function () {
 			var that = this;
+			var arrows = document.querySelectorAll('.arrow');
+			
+			if (arrows.length) {
+				for (var i=0;i<arrows.length;i++) {
+					document.body.removeChild(arrows[i]);
+				}
+			}
 
 			document.onmousemove = function (e) {
 				var initialArrow = document.querySelector('#arrow'),
@@ -181,9 +205,34 @@
 				initialArrow.style.top = posY + 'px';
 			}
 		}
+
 		window.onload = function () {
-			var makeMouse = new MouseTail(10, 25);
-			makeMouse.init();
+
+			var radios = document.querySelectorAll('input');
+
+			for(var i=0;i<radios.length;i++){
+				(function () {
+					return (function(i){
+						radios[i].onclick = function(){
+							var length = 0;
+							switch (this.id){
+								case 'length5':
+									length = 5;
+									break;
+								case 'length10':
+									length = 10;
+									break;
+								case 'length15':
+									length = 15;
+									break;
+							}
+
+							var makeMouse = new MouseTail(length,10);
+							makeMouse.init();
+						}
+					})(i)
+				})()
+			}
 		}
 	</script>
 </body>
