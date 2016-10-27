@@ -16,6 +16,7 @@
 			border-left: 5px solid transparent;
 			border-bottom: 15px solid #000;
 			transform: rotate(-22deg);
+			z-index: -1;
 		}
 		.arrow:before,.arrowParent:before{
 			content: "";
@@ -35,6 +36,7 @@
 			height: 2px;
 			background: #000;
 			transform: rotate(68deg);
+			z-index: -1;
 		}
 		.arrow2:before,.arrowParent2:before{
 			content: "";
@@ -71,6 +73,7 @@
 		    border-right: 7px solid transparent;
 		    border-top: 5px solid #000;
 		    transform: rotate(42deg);
+		    z-index: -1;
 		}
 		.arrow3:before,.arrowParent3:before{
 			content: "";
@@ -98,89 +101,137 @@
 </head>
 <body>
 
+	<div class="container ml50 mt50">
+		<p>鼠标路径长度</p>
+		<p class="mt10">
+			<input type="radio" id="length5" name="length"/> <label for="length5" class="mr20 ml5">5</label>
+			<input type="radio" id="length10" name="length"/> <label for="length10" class="mr20 ml5">10</label>
+			<input type="radio" id="length15" name="length"/> <label for="length20" class="ml5">15</label>
+		</p>
+		<p></p>
+	</div>
+
 	<div class="arrowParent" id="arrow"></div>
 
 	<script type="text/javascript">
+
+		function MouseTail (maxSonSum,arrowInterval) {
+			this.timer = 1;
+			this.pathList = [];
+			this.sonSum = 0;
+			this.maxSonSum = maxSonSum ? maxSonSum : 10;
+			this.moveSonIndex = 0;
+			this.arrowInterval = arrowInterval ? arrowInterval : 25;
+			this.initialArrow = document.querySelector('#arrow');
+		}
 		
-		window.onload = function () {
-			var timer = 1;
-			var pathList = [];
-			var sonSum = 0;
-			var maxSonSum = 10;
-			var moveSonIndex = 0;
-			var arrowInterval = 25;
-			var resetStatus;
+		// 恢复子箭头位置至父箭头
+		MouseTail.prototype.arrowReset = function () {
+			var initialArrow = document.querySelector('#arrow');
+			var arrows = document.querySelectorAll('.arrow');
+
+			for (var i=0;i<arrows.length;i++) {
+				arrows[i].style.left = initialArrow.offsetLeft + 'px';
+				arrows[i].style.top = initialArrow.offsetTop + 'px';
+			}
+		}
+
+		// 生成子箭头
+		MouseTail.prototype.makeSon = function (index) {
+			var pop = this.pathList.pop();
+			var son = document.createElement('div');
+
+			son.id = 'arrow' + index;
+			son.className = 'arrow';
+			son.style.left = pop.X + 'px';
+			son.style.top = pop.Y + 'px';
+
+			document.body.appendChild(son);
+		}
+
+		// 逐个移动箭头
+		MouseTail.prototype.moveSon = function () {
+			(this.moveSonIndex == this.maxSonSum) && (this.moveSonIndex =  0) ;
+
+			var pop = this.pathList.pop(),
+				lastArrow = document.querySelectorAll('.arrow')[this.moveSonIndex];
+
+			lastArrow.style.left = pop.X + 'px';
+			lastArrow.style.top = pop.Y + 'px';
+
+			this.moveSonIndex ++;
+
+			clearTimeout(this.resetStatus);
+			this.resetStatus = setTimeout(this.arrowReset, 100);
+		}
+
+		// 初始函数，绑定鼠标移动事件
+		MouseTail.prototype.init = function () {
+			var that = this;
+			var arrows = document.querySelectorAll('.arrow');
+			
+			if (arrows.length) {
+				for (var i=0;i<arrows.length;i++) {
+					document.body.removeChild(arrows[i]);
+				}
+			}
 
 			document.onmousemove = function (e) {
-				//return false;
+				var initialArrow = document.querySelector('#arrow'),
+					posX = e.pageX - initialArrow.offsetWidth/2, // -3
+					posY = e.pageY - initialArrow.offsetWidth/2; // +8
 
-				var mother = document.querySelector('#arrow'),
-					posX = e.pageX - mother.offsetWidth/2, // -3
-					posY = e.pageY - mother.offsetWidth/2; // +8
-
-				if (timer == 1) {
-					timer = 0;
+				if (that.timer == 1) {
+					that.timer = 0;
 					setTimeout(function () {
-						timer = 1;
+						that.timer = 1;
 
-						pathList.push({
+						that.pathList.push({
 							X: posX,
 							Y: posY
 						})
 
-						if (sonSum < maxSonSum) {
-							makeSon(e.pageX,e.pageY);
+						if (that.sonSum < that.maxSonSum) {
+							that.sonSum ++;
+							that.makeSon(that.sonSum);
 						} else {
-							moveSon();
+							that.moveSon();
 						}
 						
-					}, arrowInterval);
+					}, that.arrowInterval);
 				}
 				
-				mother.style.left = posX + 'px';
-				mother.style.top = posY + 'px';
+				initialArrow.style.left = posX + 'px';
+				initialArrow.style.top = posY + 'px';
 			}
+		}
 
-			// 生成箭头
-			function makeSon(x, y) {
-				var pop = pathList.pop();
-				var son = document.createElement('div');
+		window.onload = function () {
 
-				sonSum ++;
+			var radios = document.querySelectorAll('input');
 
-				son.id = 'arrow' + sonSum;
-				son.className = 'arrow';
-				son.style.left = pop.X + 'px';
-				son.style.top = pop.Y + 'px';
+			for(var i=0;i<radios.length;i++){
+				(function () {
+					return (function(i){
+						radios[i].onclick = function(){
+							var length = 0;
+							switch (this.id){
+								case 'length5':
+									length = 5;
+									break;
+								case 'length10':
+									length = 10;
+									break;
+								case 'length15':
+									length = 15;
+									break;
+							}
 
-				document.body.appendChild(son);
-			}
-
-			// 将箭头按鼠标路径移动
-			function moveSon () {
-				(moveSonIndex == maxSonSum) && (moveSonIndex =  0) ;
-
-				var lastArrow = document.querySelectorAll('.arrow')[moveSonIndex],
-					pop = pathList.pop();
-
-				lastArrow.style.left = pop.X + 'px';
-				lastArrow.style.top = pop.Y + 'px';
-
-				moveSonIndex ++;
-
-				clearTimeout(resetStatus);
-				resetStatus = setTimeout(arrowReset,100);
-			}
-
-			// 重置箭头位置
-			function arrowReset () {
-				var mother = document.querySelector('#arrow'),
-					arrows = document.querySelectorAll('.arrow');
-
-				for (var i=0;i<arrows.length;i++) {
-					arrows[i].style.left = mother.offsetLeft + 'px';
-					arrows[i].style.top = mother.offsetTop + 'px';
-				}
+							var makeMouse = new MouseTail(length,10);
+							makeMouse.init();
+						}
+					})(i)
+				})()
 			}
 		}
 	</script>
