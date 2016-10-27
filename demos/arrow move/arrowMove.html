@@ -110,7 +110,7 @@
 			this.arrowInterval = arrowInterval ? arrowInterval : 50;
 			this.initialArrow = document.querySelector('#arrow');
 		}
-
+		
 		MouseTail.prototype.arrowReset = function () {
 			var initialArrow = document.querySelector('#arrow');
 			var arrows = document.querySelectorAll('.arrow');
@@ -146,7 +146,7 @@
 			this.moveSonIndex ++;
 
 			clearTimeout(this.resetStatus);
-			this.resetStatus = setTimeout(this.arrowReset,this.arrowInterval);
+			this.resetStatus = setTimeout(this.arrowReset, 100);
 		}
 
 		MouseTail.prototype.init = function () {
@@ -174,7 +174,7 @@
 							that.moveSon();
 						}
 						
-					}, 25);
+					}, that.arrowInterval);
 				}
 				
 				initialArrow.style.left = posX + 'px';
@@ -182,7 +182,7 @@
 			}
 		}
 		window.onload = function () {
-			var makeMouse = new MouseTail(10, 50);
+			var makeMouse = new MouseTail(10, 25);
 			makeMouse.init();
 		}
 	</script>
